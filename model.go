@@ -9,10 +9,6 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-var (
-	numBoards int32 = 1
-)
-
 type QueensModel struct {
 	board    Board
 	timer    int
@@ -23,7 +19,9 @@ type QueensModel struct {
 }
 
 func (m *QueensModel) Reset() {
-	startingBoardNum := rand.Int31n(numBoards) + 1
+	boards, _ := os.ReadDir("boards")
+	startingBoardNum := rand.Int31n(int32(len(boards))) + 1
+
 	boardFileName := fmt.Sprintf("boards/board%v.json", startingBoardNum)
 
 	boardFileJSON, err := os.ReadFile(boardFileName)

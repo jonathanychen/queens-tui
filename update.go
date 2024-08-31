@@ -34,7 +34,7 @@ func (m QueensModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 	case tickMsg:
-		if int(msg.resets) == m.resets {
+		if int(msg.resets) == m.resets && !m.gameOver {
 			m.timer += 1
 		}
 		return m, tick(m.resets)
