@@ -7,18 +7,21 @@ import (
 	"github.com/charmbracelet/lipgloss/table"
 )
 
+// TODO: Eventually needs rework for visuals, table works as a simple solution
+// but looks weird. Probably needs some custom table/grid implementation
+
 func (m QueensModel) View() string {
 	s := "Queens\n\n"
 
-	s += fmt.Sprintf("%02d:%02d\n", m.timer/60, m.timer%60)
+	s += fmt.Sprintf("Time elapsed: %02d:%02d\n", m.timer/60, m.timer%60)
 
 	t := table.New().
 		Border(lipgloss.NormalBorder()).
 		BorderRow(true).
 		BorderColumn(true).
-		BorderStyle(lipgloss.NewStyle().Foreground(lipgloss.Color("99"))).
+		BorderStyle(lipgloss.NewStyle()).
 		StyleFunc(m.LipglossStyleFunc()).
-		Rows(m.LipglossBoardContents()...)
+		Rows(m.LipglossBoardContents(false)...)
 
 	s += t.Render()
 
@@ -61,7 +64,7 @@ func (m QueensModel) LipglossStyleFunc() func(row, col int) lipgloss.Style {
 	}
 }
 
-func (m QueensModel) LipglossBoardContents() [][]string {
+func (m QueensModel) LipglossBoardContents(useUnicode bool) [][]string {
 	res := [][]string{}
 
 	for i := 0; i < m.board.size; i++ {
@@ -70,13 +73,10 @@ func (m QueensModel) LipglossBoardContents() [][]string {
 			if m.board.cursor.x == j && m.board.cursor.y == i && !m.gameOver {
 				row = append(row, "*")
 			} else {
-				switch m.board.grid[i][j] {
-				case " ":
-					row = append(row, " ")
-				case "x":
-					row = append(row, "\u2A2F")
-				case "Q":
-					row = append(row, "\u2655")
+				if useUnicode {
+					row = append(row, unicodeChar(m.board.grid[i][j]))
+				} else {
+					row = append(row, m.board.grid[i][j])
 				}
 			}
 		}
@@ -84,4 +84,15 @@ func (m QueensModel) LipglossBoardContents() [][]string {
 	}
 
 	return res
+}
+
+func unicodeChar(char string) string {
+	switch char {
+	case "x":
+		return "\u2A2F"
+	case "Q":
+		return "\u2655"
+	default:
+		return " "
+	}
 }
